@@ -12,7 +12,7 @@ int msg_priority;
 
 int main(int argc, char const *argv[])
 {
-    int fd, bytes_received;
+    int bytes_received;
 
     //Create a new message queue
     dict_msg_q_attr.mq_flags = 0;
@@ -20,14 +20,14 @@ int main(int argc, char const *argv[])
     dict_msg_q_attr.mq_msgsize = MQ_SIZE;
     dict_msg_q_attr.mq_curmsgs = 0;
 
-    dict_msg_q = mq_open("/dict_msg_q", O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    dict_msg_q = mq_open("/dictmsgq", O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
 
     while (1)
     {
         bytes_received = mq_receive(dict_msg_q, buff, MQ_SIZE, &msg_priority);
         if (bytes_received > 0)
         {
-            printf("Message Received = %s, msg_len = %d", buff, bytes_received);
+            printf("Message Received = %s, msg_len = %d\n", buff, bytes_received);
         }
     }
 

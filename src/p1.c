@@ -1,11 +1,11 @@
 #include <mqueue.h>
 
+#include <fcntl.h>  
 #include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include<stdio.h>
+#include <stdio.h>
+#include<unistd.h>
 
-#define FILE_PATH "/usr/share/dictionary"
+#define FILE_PATH "/usr/share/dict/american-english"
 #define CHAR_SEARCH 'm'
 #define MQ_SIZE 100
 
@@ -24,10 +24,11 @@ int main(int argc, char const *argv[])
     dict_msg_q_attr.mq_msgsize = MQ_SIZE;
     dict_msg_q_attr.mq_curmsgs = 0;
 
-    dict_msg_q = mq_open("/dict_msg_q", O_RDONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    //here we are opening the msg queue
+    dict_msg_q = mq_open("/dictmsgq", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR, &dict_msg_q_attr);
 
     fd = open(FILE_PATH, O_RDONLY);
-    if(fd==-1)
+    if (fd == -1)
     {
         printf("Could not open file");
         return -1;
@@ -35,8 +36,10 @@ int main(int argc, char const *argv[])
     do
     {
         bytes_read = read(fd, str, 50);
+        
         if (*str == CHAR_SEARCH)
         {
+            printf("Sending = %s",str);
             mq_send(dict_msg_q, str, bytes_read, 0);
         }
 
